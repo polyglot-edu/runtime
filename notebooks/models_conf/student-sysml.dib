@@ -1,0 +1,8 @@
+#!csharp
+
+#r "nuget: Microsoft.DotNet.Interactive.Journey, 1.0.0-beta.22175.2"
+using Microsoft.DotNet.Interactive.Journey;
+
+#!csharp
+
+#!start-lesson --from-file "polyglot-sysml.dib"

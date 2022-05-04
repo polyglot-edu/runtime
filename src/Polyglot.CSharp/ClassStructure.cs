@@ -1,12 +1,23 @@
-﻿using Polyglot.Core;
+﻿using Polyglot.Gamification;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Polyglot.CSharp
+namespace Polyglot.Metrics.CSharp
 {
-    public record CodeString(string Value, StringSpan Span);
+    public record CodeString(string Value, StringSpan Span)
+    {
+        public virtual bool Equals(CodeString other)
+        {
+            return new CodeStringComparer().Equals(this, other);
+        }
+
+        public static bool operator ==(CodeString a, string b) => a.Value == b;
+        public static bool operator ==(string a, CodeString b) => b == a;
+        public static bool operator !=(CodeString a, string b) => !(a == b);
+        public static bool operator !=(string a, CodeString b) => !(b == a);
+    }
 
     public record ClassStructure(CodeString Name, DeclarationContextKind Kind, IEnumerable<CodeString> Modifiers, IEnumerable<FieldStructure> Fields, IEnumerable<PropertyStructure> Properties, IEnumerable<MethodStructure> Methods, IEnumerable<ConstructorStructure> Constructors, IEnumerable<ClassStructure> NestedClasses)
     {
@@ -75,14 +86,25 @@ namespace Polyglot.CSharp
     }
 
 
+    internal class CodeStringComparer : IEqualityComparer<CodeString>
+    {
+        public bool Equals(CodeString x, CodeString y)
+        {
+            return x.Value == y.Value;
+        }
 
+        public int GetHashCode([DisallowNull] CodeString obj)
+        {
+            throw new NotImplementedException();
+        }
+    }
     internal class ClassStructureComparer : IEqualityComparer<ClassStructure>
     {
         public bool Equals(ClassStructure x, ClassStructure y)
         {
             return x.Name == y.Name
                 && x.Kind == y.Kind
-                && x.Modifiers.SequenceEqual(y.Modifiers)
+                && x.Modifiers.SequenceEqual(y.Modifiers, new CodeStringComparer())
                 && x.Fields.SequenceEqual(y.Fields, new FieldStructureComparer())
                 && x.Properties.SequenceEqual(y.Properties, new PropertyStructureComparer())
                 && x.Methods.SequenceEqual(y.Methods, new MethodStructureComparer())
