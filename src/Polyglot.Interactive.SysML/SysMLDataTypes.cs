@@ -2,23 +2,23 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace SysML.Interactive;
+namespace Polyglot.Interactive.SysML;
 
 public enum IssueSeverity { ERROR, WARNING, INFO, IGNORE };
 
 public enum CheckType { FAST, NORMAL, EXPENSIVE };
 
-public enum SysMLElementKind 
-{ 
-    PACKAGE, 
-    CLASS, 
-    NAMESPACE, 
-    ATTRIBUTE_DEFINITION, 
-    PART_DEFINITION, 
-    PART_USAGE, 
-    ATTRIBUTE_USAGE, 
-    ELEMENT, 
-    ITEM_USAGE_OUT, 
+public enum SysMLElementKind
+{
+    PACKAGE,
+    CLASS,
+    NAMESPACE,
+    ATTRIBUTE_DEFINITION,
+    PART_DEFINITION,
+    PART_USAGE,
+    ATTRIBUTE_USAGE,
+    ELEMENT,
+    ITEM_USAGE_OUT,
     ITEM_USAGE_IN,
     ITEM_USAGE_INOUT,
     ITEM_USAGE,

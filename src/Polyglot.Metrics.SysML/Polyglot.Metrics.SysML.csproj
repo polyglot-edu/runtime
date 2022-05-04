@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <OutputType>Library</OutputType>
+	  <RepositoryUrl>https://github.com/polyglot-edu/runtime</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/polyglot-edu/runtime</PackageProjectUrl>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <IsPackable>true</IsPackable>
+	  <AnalysisLevel>latest-all</AnalysisLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Polyglot.Interactive.SysML\Polyglot.Interactive.SysML.csproj" />
+  </ItemGroup>
+
+</Project>

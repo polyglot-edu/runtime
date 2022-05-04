@@ -7,21 +7,13 @@
     <PackageProjectUrl>https://github.com/polyglot-edu/runtime</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
-    <AnalysisLevel>latest-all</AnalysisLevel>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22175.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(OutputPath)/Polyglot.Interactive.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Polyglot.Gamification\Polyglot.Gamification.csproj" />
-    <ProjectReference Include="..\Polyglot.Metrics.CSharp\Polyglot.Metrics.CSharp.csproj" />
-    <ProjectReference Include="..\Polyglot.Interactive.SysML\Polyglot.Interactive.SysML.csproj" />
+    <PackageReference Include="Microsoft.DotNet.Interactive.CSharp" Version="1.0.0-beta.22175.2" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using static Microsoft.DotNet.Interactive.Formatting.PocketViewTags;
 
-namespace SysML.Interactive;
+namespace Polyglot.Interactive.SysML;
 
 public class SysMLKernel :
     Kernel,
@@ -22,7 +22,7 @@ public class SysMLKernel :
 
     public SysMLKernel() : base("sysml")
     {
-            
+
     }
 
     private void SetProcessEventHandlers(Process SysMLProcess)
@@ -34,7 +34,7 @@ public class SysMLKernel :
 
         SysMLProcess.ErrorDataReceived += (o, args) =>
         {
-            KernelInvocationContext.Current?.Publish(new ErrorProduced( args.Data, KernelInvocationContext.Current?.Command));
+            KernelInvocationContext.Current?.Publish(new ErrorProduced(args.Data, KernelInvocationContext.Current?.Command));
         };
         SysMLProcess.BeginErrorReadLine();
     }
@@ -50,7 +50,7 @@ public class SysMLKernel :
         if (errors.Count > 0)
         {
             var errorMessage = new StringBuilder();
-            foreach(var error in errors.Select(e => e.Message))
+            foreach (var error in errors.Select(e => e.Message))
             {
                 errorMessage.AppendLine(error);
             }

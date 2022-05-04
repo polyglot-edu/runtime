@@ -1,28 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31015.32
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Interactive", "src\Polyglot.Interactive\Polyglot.Interactive.csproj", "{A5D6365C-36D6-47CF-AA92-AF6803BC2B43}"
-	ProjectSection(ProjectDependencies) = postProject
-		{78AAF701-C902-4EC1-BE0A-5031AB61BCEA} = {78AAF701-C902-4EC1-BE0A-5031AB61BCEA}
-		{AF9E11AA-F6F4-4AB4-8C5D-965513145832} = {AF9E11AA-F6F4-4AB4-8C5D-965513145832}
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B95A8485-8C53-4F56-B0CE-19C0726B5805}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{60F5A349-C043-414A-BF31-91B5F9F59D0D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{11BA3480-4584-435C-BA9A-8C554DB60E9F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Interactive", "src\Polyglot.Interactive\Polyglot.Interactive.csproj", "{A5D6365C-36D6-47CF-AA92-AF6803BC2B43}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Interactive.Tests", "src\Polyglot.Interactive.Tests\Polyglot.Interactive.Tests.csproj", "{054E0854-8C7F-4A77-8569-8E095363A2A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Gamification", "src\Polyglot.Core\Polyglot.Gamification.csproj", "{CC362B37-2802-4782-97B3-0FB9331E23C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Gamification", "src\Polyglot.Gamification\Polyglot.Gamification.csproj", "{CC362B37-2802-4782-97B3-0FB9331E23C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Metrics.CSharp", "src\Polyglot.CSharp\Polyglot.Metrics.CSharp.csproj", "{6FEBD120-5288-4A0D-A9C7-1693977D41E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Metrics.CSharp", "src\Polyglot.Metrics.CSharp\Polyglot.Metrics.CSharp.csproj", "{6FEBD120-5288-4A0D-A9C7-1693977D41E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Metrics.SysML", "src\Polyglot.SysML\Polyglot.Metrics.SysML.csproj", "{AF9E11AA-F6F4-4AB4-8C5D-965513145832}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CC362B37-2802-4782-97B3-0FB9331E23C6} = {CC362B37-2802-4782-97B3-0FB9331E23C6}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Metrics.SysML", "src\Polyglot.Metrics.SysML\Polyglot.Metrics.SysML.csproj", "{AF9E11AA-F6F4-4AB4-8C5D-965513145832}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SysML.Interactive", "src\SysML.Interactive\SysML.Interactive.csproj", "{78AAF701-C902-4EC1-BE0A-5031AB61BCEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot.Interactive.SysML", "src\Polyglot.Interactive.SysML\Polyglot.Interactive.SysML.csproj", "{78AAF701-C902-4EC1-BE0A-5031AB61BCEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,7 +54,12 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{054E0854-8C7F-4A77-8569-8E095363A2A7} = {60F5A349-C043-414A-BF31-91B5F9F59D0D}
+		{A5D6365C-36D6-47CF-AA92-AF6803BC2B43} = {B95A8485-8C53-4F56-B0CE-19C0726B5805}
+		{054E0854-8C7F-4A77-8569-8E095363A2A7} = {11BA3480-4584-435C-BA9A-8C554DB60E9F}
+		{CC362B37-2802-4782-97B3-0FB9331E23C6} = {B95A8485-8C53-4F56-B0CE-19C0726B5805}
+		{6FEBD120-5288-4A0D-A9C7-1693977D41E3} = {B95A8485-8C53-4F56-B0CE-19C0726B5805}
+		{AF9E11AA-F6F4-4AB4-8C5D-965513145832} = {B95A8485-8C53-4F56-B0CE-19C0726B5805}
+		{78AAF701-C902-4EC1-BE0A-5031AB61BCEA} = {B95A8485-8C53-4F56-B0CE-19C0726B5805}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {027AA058-71DC-4E33-800B-9D21D65092E2}

@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.DotNet.Interactive;
+﻿using Microsoft.DotNet.Interactive;
 using Microsoft.DotNet.Interactive.Formatting;
 using Polyglot.Gamification;
-using SysML.Interactive;
+using Polyglot.Interactive.SysML;
+using System.Linq;
+using System.Threading.Tasks;
 using static Microsoft.DotNet.Interactive.Formatting.PocketViewTags;
 
 namespace Polyglot.Interactive;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SysML.Interactive;
+namespace Polyglot.Interactive.SysML;
 
 public interface ISysMLKernel
 {
