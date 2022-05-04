@@ -1,6 +1,6 @@
 #!csharp
 
-#r "nuget: Interactive.Journey"
+#r "nuget: Microsoft.DotNet.Interactive.Journey, 1.0.0-beta.22175.2"
 using Microsoft.DotNet.Interactive.Journey;
 
 #!csharp

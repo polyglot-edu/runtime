@@ -1,7 +1,7 @@
 #!csharp
 
-#r "nuget: Interactive.Journey"
-#r "nuget: Polyglot.Interactive"
+#r "nuget: Microsoft.DotNet.Interactive.Journey, 1.0.0-beta.22175.2"
+#r "nuget: Polyglot.Interactive, 0.0.1-beta4"
 
 #!csharp
 
