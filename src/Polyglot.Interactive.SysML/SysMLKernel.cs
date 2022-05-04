@@ -73,7 +73,7 @@ public class SysMLKernel :
             var sysMLJarPath = Environment.GetEnvironmentVariable("SYSML_JAR_PATH");
             if (sysMLJarPath is null)
             {
-                throw new Exception("Environment variable \"SYSML_JAR_PATH\" is not set");
+                throw new RuntimeDependencyMissingException("Environment variable \"SYSML_JAR_PATH\" is not set");
             }
 
             var psi = new ProcessStartInfo
@@ -121,7 +121,7 @@ public class SysMLKernel :
         }
         catch (Exception)
         {
-            throw new Exception("Missing JRE. JRE is required to use the SysML Kernel");
+            throw new RuntimeDependencyMissingException("Missing JRE. JRE is required to use the SysML Kernel");
         }
     }
 }
