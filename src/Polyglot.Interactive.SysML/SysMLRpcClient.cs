@@ -1,32 +1,45 @@
 ﻿using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using StreamJsonRpc;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Polyglot.Interactive.SysML;
 
-public class SysMLRpcClient : ISysMLKernel
+public sealed class SysMLRpcClient : ISysMLKernel, IDisposable
 {
-    private ISysMLKernel jsonRpcServer { get; set; }
+    private ISysMLKernel JsonRpcServer { get; set; }
+    private readonly JsonMessageFormatter jsonFormatter;
+    private readonly NewLineDelimitedMessageHandler messageHandler;
 
     public SysMLRpcClient(Stream toServerStream, Stream fromServerStream)
     {
-        var jsonFormatter = new JsonMessageFormatter();
+        jsonFormatter = new JsonMessageFormatter();
         jsonFormatter.JsonSerializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
         jsonFormatter.JsonSerializer.Converters.Add(new StringEnumConverter());
-        var messageHandler = new NewLineDelimitedMessageHandler(toServerStream, fromServerStream, jsonFormatter);
-        jsonRpcServer = JsonRpc.Attach<ISysMLKernel>(messageHandler);
+        messageHandler = new NewLineDelimitedMessageHandler(toServerStream, fromServerStream, jsonFormatter);
+        JsonRpcServer = JsonRpc.Attach<ISysMLKernel>(messageHandler);
     }
 
     public Task<SysMLInteractiveResult> EvalAsync(string input)
     {
-        return jsonRpcServer.EvalAsync(input);
+        return JsonRpcServer.EvalAsync(input);
     }
 
-    public Task<string> GetSvgAsync(IEnumerable<string> names, IEnumerable<string> views, IEnumerable<string> styles, IEnumerable<string> help)
+    public Task<string> GetSvgAsync(IEnumerable<string> names, IEnumerable<string> views = null, IEnumerable<string> styles = null, IEnumerable<string> help = null)
     {
-        return jsonRpcServer.GetSvgAsync(names, views, styles, help);
+        views = views ?? Enumerable.Empty<string>();
+        styles = styles ?? Enumerable.Empty<string>();
+        help = help ?? Enumerable.Empty<string>();
+        return JsonRpcServer.GetSvgAsync(names, views, styles, help);
+    }
+
+    public void Dispose()
+    {
+        jsonFormatter.Dispose();
+        _ = messageHandler.DisposeAsync();
     }
 }

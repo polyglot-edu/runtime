@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.DotNet.Interactive;
+﻿using Microsoft.DotNet.Interactive;
 using Microsoft.DotNet.Interactive.Commands;
 using Microsoft.DotNet.Interactive.Events;
 using Microsoft.DotNet.Interactive.Formatting;
@@ -8,8 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using static Microsoft.DotNet.Interactive.Formatting.PocketViewTags;
 
 namespace Polyglot.Interactive.SysML;
 
@@ -22,7 +19,6 @@ public class SysMLKernel :
 
     public SysMLKernel() : base("sysml")
     {
-
     }
 
     private void SetProcessEventHandlers(Process SysMLProcess)
@@ -39,11 +35,11 @@ public class SysMLKernel :
         SysMLProcess.BeginErrorReadLine();
     }
 
-    public async Task HandleAsync(SubmitCode submitCode, KernelInvocationContext context)
+    public async Task HandleAsync(SubmitCode command, KernelInvocationContext context)
     {
         EnsureSysMLKernelServerIsRunning();
 
-        var result = await SysMLRpcClient.EvalAsync(submitCode.Code);
+        var result = await SysMLRpcClient.EvalAsync(command.Code).ConfigureAwait(true);
 
         var errors = result.SyntaxErrors.Concat(result.SemanticErrors).ToList();
 
@@ -55,16 +51,17 @@ public class SysMLKernel :
                 errorMessage.AppendLine(error);
             }
 
-            context.Fail(submitCode, message: errorMessage.ToString());
+            context.Fail(command, message: errorMessage.ToString());
             return;
         }
 
         var sumbittedItems = result.Content.Select(c => c.Name);
-        var svgText = await SysMLRpcClient.GetSvgAsync(sumbittedItems, Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>());
+        var svgText = await SysMLRpcClient.GetSvgAsync(sumbittedItems).ConfigureAwait(true);
+
         var svg = new SysMLSvg(svgText);
 
         context.Display(svg, HtmlFormatter.MimeType);
-        context.Publish(new ReturnValueProduced(result, submitCode, FormattedValue.FromObject(result)));
+        context.Publish(new ReturnValueProduced(result, command, FormattedValue.FromObject(result)));
     }
 
     private void EnsureSysMLKernelServerIsRunning()
@@ -90,15 +87,15 @@ public class SysMLKernel :
                 WorkingDirectory = sysMLJarPath
             };
 
-            //var path = Environment.GetEnvironmentVariable("PATH");
-            //psi.EnvironmentVariables["PATH"] = $"{path};{sysMLJarPath}";
-
             SysMLProcess = new Process { StartInfo = psi, EnableRaisingEvents = true };
             RegisterForDisposal(() =>
             {
+                SysMLRpcClient.Dispose();
                 SysMLRpcClient = null;
+
                 SysMLProcess.Kill(true);
                 SysMLProcess.Dispose();
+                SysMLProcess = null;
             });
 
             SysMLProcess.Start();
@@ -126,42 +123,5 @@ public class SysMLKernel :
         {
             throw new Exception("Missing JRE. JRE is required to use the SysML Kernel");
         }
-    }
-}
-
-public class SysMLSvg
-{
-    public SysMLSvg(string svg)
-    {
-        Svg = svg;
-    }
-
-    public string Svg { get; }
-}
-
-public static class SysMLKernelExtension
-{
-    public static CompositeKernel UseSysML(this CompositeKernel kernel)
-    {
-        var sysMLKernel = new SysMLKernel();
-        kernel.Add(sysMLKernel);
-
-        RegisterFormatters();
-        return kernel;
-    }
-
-    public static void RegisterFormatters()
-    {
-        Formatter.Register<SysMLSvg>((value, writer) =>
-        {
-            var html = div(new HtmlString(value.Svg));
-            writer.Write(html);
-        }, HtmlFormatter.MimeType);
-
-        Formatter.Register<SysMLInteractiveResult>((value, writer) =>
-        {
-            var html = div(new HtmlString($"done with {value.Warnings?.Count()} warnings."));
-            writer.Write(html);
-        }, HtmlFormatter.MimeType);
     }
 }

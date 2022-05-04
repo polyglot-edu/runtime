@@ -13,6 +13,8 @@ public enum SysMLElementKind
     PACKAGE,
     CLASS,
     NAMESPACE,
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+    // Enum kinds matches original SysML element kinds, so the naming should be consistent
     ATTRIBUTE_DEFINITION,
     PART_DEFINITION,
     PART_USAGE,
@@ -25,6 +27,7 @@ public enum SysMLElementKind
     PORT_USAGE,
     PORT_DEFINITION,
     ITEM_DEFINITION
+#pragma warning restore CA1707 // Identifiers should not contain underscores
 };
 
 public record SysMLIssue(
