@@ -4,38 +4,37 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Polyglot.Gamification
+namespace Polyglot.Gamification;
+
+public static class BodyHelper
 {
-    public static class BodyHelper
-    {
-        private static JsonSerializerOptions Options { get; } =
-            new(JsonSerializerDefaults.General)
+    private static JsonSerializerOptions Options { get; } =
+        new(JsonSerializerDefaults.General)
+        {
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals | JsonNumberHandling.AllowReadingFromString,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true,
+            Converters =
             {
-                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals | JsonNumberHandling.AllowReadingFromString,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                WriteIndented = true,
-                Converters =
-                {
-                    new NumberFloatJsonConverterFactory()
-                }
-            };
+                new NumberFloatJsonConverterFactory()
+            }
+        };
 
-        public static StringContent ToBody(this object source)
-        {
-            return new(source.ToJson(), Encoding.UTF8, "application/json");
-        }
+    public static StringContent ToBody(this object source)
+    {
+        return new(source.ToJson(), Encoding.UTF8, "application/json");
+    }
 
-        public static string ToJson(this object source)
-        {
-            var text =  JsonSerializer.Serialize(source, Options);
-            return text;
-        }
+    public static string ToJson(this object source)
+    {
+        var text =  JsonSerializer.Serialize(source, Options);
+        return text;
+    }
 
-        public static T ToObject<T>(this string jsonString)
-        {
-            return JsonSerializer.Deserialize<T>(jsonString, Options);
-        }
+    public static T ToObject<T>(this string jsonString)
+    {
+        return JsonSerializer.Deserialize<T>(jsonString, Options);
     }
 }
