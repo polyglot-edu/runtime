@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+	<None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Polyglot.Gamification\Polyglot.Gamification.csproj" />
   </ItemGroup>
 

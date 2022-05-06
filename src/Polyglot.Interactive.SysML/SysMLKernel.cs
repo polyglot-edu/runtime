@@ -39,7 +39,7 @@ public class SysMLKernel :
     {
         EnsureSysMLKernelServerIsRunning();
 
-        var result = await SysMLRpcClient.EvalAsync(command.Code).ConfigureAwait(true);
+        var result = await SysMLRpcClient.EvalAsync(command.Code);
 
         var errors = result.SyntaxErrors.Concat(result.SemanticErrors).ToList();
 
@@ -56,7 +56,7 @@ public class SysMLKernel :
         }
 
         var sumbittedItems = result.Content.Select(c => c.Name);
-        var svgText = await SysMLRpcClient.GetSvgAsync(sumbittedItems).ConfigureAwait(true);
+        var svgText = await SysMLRpcClient.GetSvgAsync(sumbittedItems);
 
         var svg = new SysMLSvg(svgText);
 

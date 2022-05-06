@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <None Include="$(OutputPath)/Polyglot.Interactive.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
