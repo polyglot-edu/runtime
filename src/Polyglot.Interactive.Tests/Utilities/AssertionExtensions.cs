@@ -1,15 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FluentAssertions.Collections;
 using FluentAssertions.Equivalency;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using Microsoft.DotNet.Interactive.Commands;
+using Microsoft.DotNet.Interactive.Connection;
 using Microsoft.DotNet.Interactive.Events;
-using Microsoft.DotNet.Interactive.Server;
 using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace Polyglot.Interactive.Tests.Utilities
@@ -122,8 +122,8 @@ namespace Polyglot.Interactive.Tests.Utilities
             return new AndWhichConstraint<ObjectAssertions, T>(subject.Should(), subject);
         }
 
-      
-     
+
+
         public static AndWhichConstraint<ObjectAssertions, T> ContainSingle<T>(
             this GenericCollectionAssertions<KernelEvent> should,
             Func<T, bool> where = null)
