@@ -1,26 +1,28 @@
-﻿using System.Net.Http;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System.Net.Http;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Polyglot.Gamification;
 
 public static class BodyHelper
 {
-    private static JsonSerializerOptions Options { get; } =
-        new(JsonSerializerDefaults.General)
+    private static JsonSerializerSettings Options { get; } = new JsonSerializerSettings
+    {
+        ContractResolver = new DefaultContractResolver
         {
-            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals | JsonNumberHandling.AllowReadingFromString,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true,
-            Converters =
+            NamingStrategy = new CamelCaseNamingStrategy
             {
-                new NumberFloatJsonConverterFactory()
+                ProcessDictionaryKeys = false
             }
-        };
+        },
+        Formatting = Formatting.Indented,
+        NullValueHandling = NullValueHandling.Ignore,
+        Converters = {
+            new ExpandoObjectConverter()
+        }
+    };
 
     public static StringContent ToBody(this object source)
     {
@@ -29,12 +31,12 @@ public static class BodyHelper
 
     public static string ToJson(this object source)
     {
-        var text =  JsonSerializer.Serialize(source, Options);
+        var text = JsonConvert.SerializeObject(source, Options);
         return text;
     }
 
     public static T ToObject<T>(this string jsonString)
     {
-        return JsonSerializer.Deserialize<T>(jsonString, Options);
+        return JsonConvert.DeserializeObject<T>(jsonString, Options);
     }
 }
