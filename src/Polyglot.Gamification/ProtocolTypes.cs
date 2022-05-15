@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace Polyglot.Gamification;
 
@@ -13,6 +14,9 @@ public class PolyglotEdge
 
     [JsonIgnore]
     public bool Satisfied { get; set; }
+
+    [JsonConverter(typeof(ExpandoObjectConverter))]
+    public dynamic Data { get; init; }
 }
 
 public record PolyglotNode(
@@ -22,5 +26,8 @@ public record PolyglotNode(
     IEnumerable<string> Setup,
     IEnumerable<string> Display,
     IEnumerable<string> PostExecution,
-    IEnumerable<PolyglotEdge> Validation
+    IEnumerable<PolyglotEdge> Validation,
+
+    [JsonConverter(typeof(ExpandoObjectConverter))]
+    dynamic Data
 );

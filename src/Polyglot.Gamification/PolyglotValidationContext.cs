@@ -2,12 +2,12 @@
 
 namespace Polyglot.Gamification;
 
-public class PolyglotValidationContext
-{
-    public RuleContext JourneyContext { get; init; }
+public record PolyglotValidationContext(
+    RuleContext JourneyContext,
+    Exercise Exercise,
+    Condition Condition
+);
 
-    public PolyglotValidationContext(RuleContext journeyContext)
-    {
-        JourneyContext = journeyContext;
-    }
-}
+public record Exercise(dynamic Data);
+
+public record Condition(dynamic Data);

@@ -20,12 +20,15 @@ public static class JourneyHelper
         return exercise.ToJourneyChallenge(CancellationToken.None);
     }
 
-    public static Challenge ToJourneyChallenge(this PolyglotNode exercise, CancellationToken cancellationToken)
+    public static Challenge ToJourneyChallenge(this PolyglotNode node, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(exercise);
+        ArgumentNullException.ThrowIfNull(node);
 
-        var challenge = new Challenge(name: exercise.Title);
-        exercise.Validation.ToList().ForEach(edge => challenge.AddRuleAsync(edge.Title, configureExecution(edge)));
+        var challenge = new Challenge(name: node.Title);
+
+        var exercise = new Exercise(node.Data);
+
+        node.Validation.ToList().ForEach(edge => challenge.AddRuleAsync(edge.Title, configureExecution(edge)));
         return challenge;
 
         Func<RuleContext, Task> configureExecution(PolyglotEdge edge)
@@ -36,14 +39,32 @@ public static class JourneyHelper
                 {
                     var globals = new ScriptParams
                     {
-                        polyglotContext = new PolyglotValidationContext(context)
+                        polyglotContext = new PolyglotValidationContext(
+                            context,
+                            exercise,
+                            new Condition(edge.Data)
+                        )
                     };
 
-                    var scriptOptions = Microsoft.CodeAnalysis.Scripting.ScriptOptions.Default.WithImports("Polyglot.Gamification")
-                                                                                                        .AddReferences(typeof(PolyglotValidationContext).Assembly);
+                    var references = new[]
+                    {
+                        typeof(RuleContext).Assembly,
+                        typeof(PolyglotValidationContext).Assembly
+                    };
 
-                    var script = CSharpScript.Create<(bool, string)>(edge.Code, scriptOptions, globalsType: typeof(ScriptParams));
-                    script = script.ContinueWith<(bool, string)>("return validate(polyglotContext);");
+                    var imports = new[]
+                    {
+                        "System",
+                        "Microsoft.DotNet.Interactive.Journey",
+                        "Polyglot.Gamification"
+                    };
+
+
+                    var scriptOptions = Microsoft.CodeAnalysis.Scripting.ScriptOptions.Default.AddReferences(references)
+                                                                                                        .AddImports(imports);
+
+
+                    var script = CSharpScript.Create<(bool, string)>($"return validate(polyglotContext);\n{edge.Code}", scriptOptions, globalsType: typeof(ScriptParams));
 
                     // https://github.com/dotnet/roslyn/issues/41722
                     var (result, reason) = (await script.RunAsync(globals, cancellationToken)).ReturnValue;
