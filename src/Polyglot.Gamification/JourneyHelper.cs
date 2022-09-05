@@ -1,4 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.DotNet.Interactive;
+using Microsoft.DotNet.Interactive.Commands;
+using Microsoft.DotNet.Interactive.Events;
 using Microsoft.DotNet.Interactive.Journey;
 using System;
 using System.Linq;
@@ -14,7 +17,6 @@ public class ScriptParams
 
 public static class JourneyHelper
 {
-
     public static Challenge ToJourneyChallenge(this PolyglotNode exercise)
     {
         return exercise.ToJourneyChallenge(CancellationToken.None);
@@ -24,17 +26,27 @@ public static class JourneyHelper
     {
         ArgumentNullException.ThrowIfNull(node);
 
-        var challenge = new Challenge(name: node.Title);
+        var setupSubmissions = node.RuntimeData.ChallengeSetup.Select(s => new SubmitCode(s)).ToList().AsReadOnly();
+        var contentSubmissions = node.RuntimeData.ChallengeContent
+                                                                            .OrderByDescending(c => c.Priority)
+                                                                            .Select(c => new SendEditableCode(c.ContentType, c.Content))
+                                                                            .ToList().AsReadOnly();
+        var challenge = new Challenge(setupSubmissions, contentSubmissions, name: node.Title);
 
         var exercise = new Exercise(node.Data);
 
+
         node.Validation.ToList().ForEach(edge => challenge.AddRuleAsync(edge.Title, configureExecution(edge)));
+        ConfigurePolyglotProgressionHandler(challenge, node);
+        KernelInvocationContext.Current.Display(value: "converted to journey challenge");
         return challenge;
 
         Func<RuleContext, Task> configureExecution(PolyglotEdge edge)
         {
+            KernelInvocationContext.Current.Display(value: "configuring rule");
             return async (RuleContext context) =>
             {
+                KernelInvocationContext.Current.Display(value: "running rule");
                 try
                 {
                     var globals = new ScriptParams
@@ -49,22 +61,33 @@ public static class JourneyHelper
                     var references = new[]
                     {
                         typeof(RuleContext).Assembly,
-                        typeof(PolyglotValidationContext).Assembly
+                        typeof(PolyglotValidationContext).Assembly,
+                        typeof(ReturnValueProduced).Assembly,
+                        typeof(CSharpScript).Assembly,
+                        typeof(Task).Assembly,
+                        typeof(Enumerable).Assembly,
+                        typeof(System.Collections.IEnumerable).Assembly,
+                        typeof(Microsoft.CodeAnalysis.Scripting.ScriptOptions).Assembly
                     };
 
                     var imports = new[]
                     {
                         "System",
+                        "System.Linq",
+                        "System.Collections",
+                        "System.Collections.Generic",
                         "Microsoft.DotNet.Interactive.Journey",
+                        "Microsoft.DotNet.Interactive.Events",
+                        "Microsoft.CodeAnalysis.CSharp.Scripting",
+                        "System.Threading",
+                        "System.Threading.Tasks",
                         "Polyglot.Gamification"
                     };
-
 
                     var scriptOptions = Microsoft.CodeAnalysis.Scripting.ScriptOptions.Default.AddReferences(references)
                                                                                                         .AddImports(imports);
 
-
-                    var script = CSharpScript.Create<(bool, string)>($"return validate(polyglotContext);\n{edge.Code}", scriptOptions, globalsType: typeof(ScriptParams));
+                    var script = CSharpScript.Create<(bool, string)>($"return await validate(polyglotContext);\n{edge.Code}", scriptOptions, globalsType: typeof(ScriptParams));
 
                     // https://github.com/dotnet/roslyn/issues/41722
                     var (result, reason) = (await script.RunAsync(globals, cancellationToken)).ReturnValue;
@@ -87,5 +110,39 @@ public static class JourneyHelper
                 }
             };
         }
+    }
+
+    private static void ConfigurePolyglotProgressionHandler(Challenge challenge, PolyglotNode node)
+    {
+        KernelInvocationContext.Current.Display(value: "configuring progression handler");
+        challenge.OnCodeSubmittedAsync(async context =>
+        {
+            KernelInvocationContext.Current.Display(value: "running progression handler");
+            var satisfiedConditions = node.Validation.Where(e => e.Satisfied).Select(e => e.Id);
+            var nextPolyglotNode = await GamificationClient.Current.GetNextExerciseAsync(satisfiedConditions);
+            var nextChallenge = nextPolyglotNode.ToJourneyChallenge();
+            await context.StartChallengeAsync(nextChallenge);
+        });
+    }
+
+    public static async Task<PolyglotNode> AutoSkipChallengesThatDontRequireASubmission(CompositeKernel compositeKernel, PolyglotNode node)
+    {
+        ArgumentNullException.ThrowIfNull(compositeKernel);
+        ArgumentNullException.ThrowIfNull(node);
+
+        var currentNode = node;
+        var challengeDoesntRequireSubmission = currentNode.Validation.All(e => e.EdgeType == "unconditionalEdge") && currentNode.Validation.Any();
+        while (challengeDoesntRequireSubmission)
+        {
+            // send challenge to journey so it displays
+            var currentChallenge = currentNode.ToJourneyChallenge();
+            await compositeKernel.InitializeChallenge(currentChallenge);
+            await Lesson.StartChallengeAsync(currentChallenge);
+
+            // retrieve next challenge
+            currentNode = await GamificationClient.Current.GetNextExerciseAsync(currentNode.Validation.Select(e => e.Id));
+            challengeDoesntRequireSubmission = currentNode.Validation.All(e => e.EdgeType == "unconditionalEdge") && currentNode.Validation.Any();
+        }
+        return currentNode;
     }
 }
