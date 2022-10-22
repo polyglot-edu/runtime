@@ -16,7 +16,8 @@ public class KernelExtension : IKernelExtension
     {
         await RegisterFormattersAsync();
         await InitializePolyglotAsync();
-        await InitializeJourneyAsync(kernel);
+        //await InitializeJourneyAsync(kernel);
+        kernel.RegisterCommands();
 
 
         if (KernelInvocationContext.Current is { } current)
@@ -28,10 +29,10 @@ public class KernelExtension : IKernelExtension
     private static async Task InitializePolyglotAsync()
     {
         GamificationClient.Configure("http://localhost");
-        GamificationClient.PolyglotFlowId = "b2cae670-dffc-4f00-9585-c4b693a0f5d7";
+        //GamificationClient.PolyglotFlowId = "b2cae670-dffc-4f00-9585-c4b693a0f5d7";
     }
 
-    private static async Task InitializeJourneyAsync(Kernel kernel)
+    public static async Task InitializeJourneyAsync(Kernel kernel)
     {
         if (kernel is CompositeKernel compositeKernel)
         {
@@ -52,10 +53,10 @@ public class KernelExtension : IKernelExtension
             var challenge = actualFirstNode.ToJourneyChallenge();
             await Journey.KernelExtensions.InitializeChallenge(compositeKernel, challenge);
             await Journey.Lesson.StartChallengeAsync(challenge);
-            KernelInvocationContext.Current.Display(firstNode);
-            KernelInvocationContext.Current.Display(actualFirstNode);
-            KernelInvocationContext.Current.Display(challenge);
-            KernelInvocationContext.Current.Display(value: "First challenge started");
+            //KernelInvocationContext.Current.Display(firstNode);
+            //KernelInvocationContext.Current.Display(actualFirstNode);
+            //KernelInvocationContext.Current.Display(challenge);
+            //KernelInvocationContext.Current.Display(value: "First challenge started");
         }
         else
         {
