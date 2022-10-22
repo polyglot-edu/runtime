@@ -1,0 +1,24 @@
+#!pwsh
+
+$version = "0.0.2-beta90"
+
+Remove-Item "./packages/*"
+
+dotnet build "../src/Polyglot.Interactive/Polyglot.Interactive.csproj"
+dotnet build "../src/Polyglot.Interactive.SysML/Polyglot.Interactive.SysML.csproj"
+# dotnet build "../src/Polyglot.Metrics.SysML/Polyglot.Metrics.SysML.csproj"
+
+dotnet pack "..\src\Polyglot.Interactive\Polyglot.Interactive.csproj" /p:PackageVersion=$version -o "../notebooks/packages"
+dotnet pack "..\src\Polyglot.Interactive.SysML\Polyglot.Interactive.SysML.csproj" /p:PackageVersion=$version -o "../notebooks/packages"
+dotnet pack "..\src\Polyglot.Gamification\Polyglot.Gamification.csproj" /p:PackageVersion=$version -o "../notebooks/packages"
+dotnet pack "..\src\Polyglot.Metrics.CSharp\Polyglot.Metrics.CSharp.csproj" /p:PackageVersion=$version -o "../notebooks/packages"
+# dotnet pack "..\src\Polyglot.Metrics.SysML\Polyglot.Metrics.SysML.csproj" /p:PackageVersion=$version -o "../notebooks/packages"
+
+#!csharp
+
+#i "nuget: C:\dev\repos\polyglot\runtime\notebooks\packages"
+#r "nuget: Polyglot.Interactive, 0.0.2-*"
+
+#!csharp
+
+#!polyglot-setup --flowid b2cae670-dffc-4f00-9585-c4b693a0f5d7
