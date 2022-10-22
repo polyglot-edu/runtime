@@ -12,6 +12,9 @@ public class PolyglotEdge
     public string Title { get; init; }
     public string Code { get; init; }
 
+    [JsonProperty("type")]
+    public string EdgeType { get; init; }
+
     [JsonIgnore]
     public bool Satisfied { get; set; }
 
@@ -19,13 +22,20 @@ public class PolyglotEdge
     public dynamic Data { get; init; }
 }
 
+public record ChallengeContent
+{
+    [JsonProperty("type")]
+    public string ContentType { get; init; }
+    public string Content { get; init; }
+    public int Priority { get; init; } = 0;
+}
+public record RuntimeData(IEnumerable<string> ChallengeSetup, IEnumerable<ChallengeContent> ChallengeContent);
+
 public record PolyglotNode(
     string Title,
     string Description,
     string Language,
-    IEnumerable<string> Setup,
-    IEnumerable<string> Display,
-    IEnumerable<string> PostExecution,
+    RuntimeData RuntimeData,
     IEnumerable<PolyglotEdge> Validation,
 
     [JsonConverter(typeof(ExpandoObjectConverter))]

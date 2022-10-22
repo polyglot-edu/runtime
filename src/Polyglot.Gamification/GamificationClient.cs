@@ -10,6 +10,7 @@ namespace Polyglot.Gamification;
 public class GamificationClient
 {
     public const string DefaultServerUri = "http://localhost/";
+    public static string PolyglotFlowId { get; set; }   // TODO: improve this one
     public static GamificationClient Current { get; private set; }
 
     private readonly HttpClient _client;
@@ -42,6 +43,7 @@ public class GamificationClient
         Current = new GamificationClient(serverUri, clientFactory?.Invoke() ?? new HttpClient());
     }
 
+    public async Task<PolyglotNode> GetInitialExerciseAsync() => await GetInitialExerciseAsync(PolyglotFlowId, CancellationToken.None);
     public async Task<PolyglotNode> GetInitialExerciseAsync(string polyglotFlowId) => await GetInitialExerciseAsync(polyglotFlowId, CancellationToken.None);
     public async Task<PolyglotNode> GetInitialExerciseAsync(string polyglotFlowId, CancellationToken cancellationToken)
     {
@@ -62,6 +64,7 @@ public class GamificationClient
         return content.ToObject<PolyglotNode>();
     }
 
+    public async Task<PolyglotNode> GetNextExerciseAsync(IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(PolyglotFlowId, satisfiedConditions, CancellationToken.None);
     public async Task<PolyglotNode> GetNextExerciseAsync(string polyglotFlowId, IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(polyglotFlowId, satisfiedConditions, CancellationToken.None);
     public async Task<PolyglotNode> GetNextExerciseAsync(string polyglotFlowId, IEnumerable<string> satisfiedConditions, CancellationToken cancellationToken)
     {
