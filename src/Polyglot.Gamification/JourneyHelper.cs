@@ -38,15 +38,15 @@ public static class JourneyHelper
 
         node.Validation.ToList().ForEach(edge => challenge.AddRuleAsync(edge.Title, configureExecution(edge)));
         ConfigurePolyglotProgressionHandler(challenge, node);
-        KernelInvocationContext.Current.Display(value: "converted to journey challenge");
+        //KernelInvocationContext.Current.Display(value: "converted to journey challenge");
         return challenge;
 
         Func<RuleContext, Task> configureExecution(PolyglotEdge edge)
         {
-            KernelInvocationContext.Current.Display(value: "configuring rule");
+            //KernelInvocationContext.Current.Display(value: "configuring rule");
             return async (RuleContext context) =>
             {
-                KernelInvocationContext.Current.Display(value: "running rule");
+                //KernelInvocationContext.Current.Display(value: "running rule");
                 try
                 {
                     var globals = new ScriptParams
@@ -114,14 +114,27 @@ public static class JourneyHelper
 
     private static void ConfigurePolyglotProgressionHandler(Challenge challenge, PolyglotNode node)
     {
-        KernelInvocationContext.Current.Display(value: "configuring progression handler");
+        //KernelInvocationContext.Current.Display(value: "configuring progression handler");
         challenge.OnCodeSubmittedAsync(async context =>
         {
-            KernelInvocationContext.Current.Display(value: "running progression handler");
+            //KernelInvocationContext.Current.Display(value: "running progression handler");
             var satisfiedConditions = node.Validation.Where(e => e.Satisfied).Select(e => e.Id);
             var nextPolyglotNode = await GamificationClient.Current.GetNextExerciseAsync(satisfiedConditions);
-            var nextChallenge = nextPolyglotNode.ToJourneyChallenge();
-            await context.StartChallengeAsync(nextChallenge);
+            if (nextPolyglotNode is not null)
+            {
+                if (Kernel.Root is CompositeKernel compositeKernel)
+                {
+                    //KernelInvocationContext.Current.Display(value: "current kernel is CompositeKernel");
+                    nextPolyglotNode = await AutoSkipChallengesThatDontRequireASubmission(compositeKernel, nextPolyglotNode);
+                }
+                else
+                {
+                    KernelInvocationContext.Current.Display(value: "current kernel is not CompositeKernel");
+                }
+                //KernelInvocationContext.Current.Display(nextPolyglotNode);
+                var nextChallenge = nextPolyglotNode.ToJourneyChallenge();
+                await context.StartChallengeAsync(nextChallenge);
+            }
         });
     }
 
@@ -138,6 +151,8 @@ public static class JourneyHelper
             var currentChallenge = currentNode.ToJourneyChallenge();
             await compositeKernel.InitializeChallenge(currentChallenge);
             await Lesson.StartChallengeAsync(currentChallenge);
+
+            Thread.Sleep(1000); // TODO: find a better way to wait for the challenge to be displayed
 
             // retrieve next challenge
             currentNode = await GamificationClient.Current.GetNextExerciseAsync(currentNode.Validation.Select(e => e.Id));
