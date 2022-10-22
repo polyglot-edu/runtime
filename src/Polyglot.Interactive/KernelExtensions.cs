@@ -17,33 +17,30 @@ public static class KernelExtensions
                 "--flowid",
                 "The flow to id to use.");
 
-            //var serverUrlOption = new Option<string>(
-            //    "--server-url",
-            //    "The server url to use.");
+            var serverUrlOption = new Option<string>(
+                "--serverurl",
+                "The server url to use.");
 
             var command = new Command("#!polyglot-setup", "Configures the polyglot for the current notebook.")
             {
-                Handler = CommandHandler.Create<string, KernelInvocationContext>(async (flowId, context) =>
+                Handler = CommandHandler.Create<string, string, KernelInvocationContext>(async (flowId, serverUrl, context) =>
                 {
-
-
-
+                    if (!string.IsNullOrWhiteSpace(serverUrl))
+                    {
+                        GamificationClient.Configure(serverUrl);
+                    }
                     if (!string.IsNullOrWhiteSpace(flowId))
                     {
                         GamificationClient.PolyglotFlowId = flowId;
                         await KernelExtension.InitializeJourneyAsync(kernel);
                     }
-                    //if (string.IsNullOrWhiteSpace(serverUrl))
-                    //{
-                    //    GamificationClient.Configure(serverUrl);
-                    //}
 
                     KernelInvocationContextExtensions.Display(context, @"Polyglot configuration is now complete.");
                 })
 
             };
             command.AddOption(flowIdOption);
-            //command.AddOption(serverUrlOption);
+            command.AddOption(serverUrlOption);
             return command;
         }
     }
