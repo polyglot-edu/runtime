@@ -36,7 +36,7 @@ public class KernelExtension : IKernelExtension
     {
         if (kernel is CompositeKernel compositeKernel)
         {
-            if (compositeKernel.RootKernel.FindKernel("csharp") is CSharpKernel csharpKernel)
+            if (compositeKernel.RootKernel.FindKernelByName("csharp") is CSharpKernel csharpKernel)
             {
                 csharpKernel.DeferCommand(new SubmitCode($"#r \"{typeof(Journey.Lesson).Assembly.Location}\"", csharpKernel.Name));
                 csharpKernel.DeferCommand(new SubmitCode($"using {typeof(Journey.Lesson).Namespace};", csharpKernel.Name));
