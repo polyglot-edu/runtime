@@ -8,6 +8,6 @@ public record PolyglotValidationContext(
     Condition Condition
 );
 
-public record Exercise(dynamic Data);
+public record Exercise(dynamic Data, string NodeType);
 
 public record Condition(dynamic Data);

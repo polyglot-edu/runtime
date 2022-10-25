@@ -33,7 +33,7 @@ public static class JourneyHelper
                                                                             .ToList().AsReadOnly();
         var challenge = new Challenge(setupSubmissions, contentSubmissions, name: node.Title);
 
-        var exercise = new Exercise(node.Data);
+        var exercise = new Exercise(node.Data, node.NodeType);
 
 
         node.Validation.ToList().ForEach(edge => challenge.AddRuleAsync(edge.Title, configureExecution(edge)));
@@ -67,6 +67,8 @@ public static class JourneyHelper
                         typeof(Task).Assembly,
                         typeof(Enumerable).Assembly,
                         typeof(System.Collections.IEnumerable).Assembly,
+                        typeof(System.Collections.Generic.IEnumerable<>).Assembly,
+                        typeof(System.Collections.Generic.List<>).Assembly,
                         typeof(Microsoft.CodeAnalysis.Scripting.ScriptOptions).Assembly
                     };
 

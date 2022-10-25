@@ -38,6 +38,9 @@ public record PolyglotNode(
     RuntimeData RuntimeData,
     IEnumerable<PolyglotEdge> Validation,
 
+    [JsonProperty("type")]
+    string NodeType,
+
     [JsonConverter(typeof(ExpandoObjectConverter))]
     dynamic Data
 );
