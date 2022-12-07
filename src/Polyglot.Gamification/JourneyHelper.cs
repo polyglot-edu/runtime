@@ -3,6 +3,8 @@ using Microsoft.DotNet.Interactive;
 using Microsoft.DotNet.Interactive.Commands;
 using Microsoft.DotNet.Interactive.Events;
 using Microsoft.DotNet.Interactive.Journey;
+using Polyglot.Interactive.SysML;
+using Polyglot.Metrics.SysML;
 using System;
 using System.Linq;
 using System.Threading;
@@ -62,6 +64,9 @@ public static class JourneyHelper
                     {
                         typeof(RuleContext).Assembly,
                         typeof(PolyglotValidationContext).Assembly,
+                        typeof(SysMLElement).Assembly,
+                        typeof(SysMLElementKind).Assembly,
+                        typeof(DefinitionStructureMetric).Assembly,
                         typeof(ReturnValueProduced).Assembly,
                         typeof(CSharpScript).Assembly,
                         typeof(Task).Assembly,
@@ -83,7 +88,9 @@ public static class JourneyHelper
                         "Microsoft.CodeAnalysis.CSharp.Scripting",
                         "System.Threading",
                         "System.Threading.Tasks",
-                        "Polyglot.Gamification"
+                        "Polyglot.Gamification",
+                        "Polyglot.Interactive.SysML",
+                        "Polyglot.Metrics.SysML"
                     };
 
                     var scriptOptions = Microsoft.CodeAnalysis.Scripting.ScriptOptions.Default.AddReferences(references)
