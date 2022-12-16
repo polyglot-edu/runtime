@@ -19,6 +19,9 @@ public class SysMLKernel :
 
     public SysMLKernel() : base("sysml")
     {
+        KernelInfo.DisplayName = "SysML";
+        KernelInfo.LanguageName = "SysML";
+        KernelInfo.LanguageVersion = "2.0";
     }
 
     private void SetProcessEventHandlers(Process SysMLProcess)
