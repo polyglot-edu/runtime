@@ -30,7 +30,7 @@ public static class JourneyHelper
 
         var setupSubmissions = node.RuntimeData.ChallengeSetup.Select(s => new SubmitCode(s)).ToList().AsReadOnly();
         var contentSubmissions = node.RuntimeData.ChallengeContent
-                                                                            .OrderByDescending(c => c.Priority)
+                                                                            .OrderBy(c => c.Priority)
                                                                             .Select(c => new SendEditableCode(c.ContentType, c.Content))
                                                                             .ToList().AsReadOnly();
         var challenge = new Challenge(setupSubmissions, contentSubmissions, name: node.Title);
