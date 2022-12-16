@@ -1,19 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RepositoryUrl>https://github.com/polyglot-edu/runtime</RepositoryUrl>
     <PackageProjectUrl>https://github.com/polyglot-edu/runtime</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
-
+	
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22175.2" />
-    <PackageReference Include="Microsoft.DotNet.Interactive.CSharp" Version="1.0.0-beta.22175.2" />
+    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22606.2" />
+    <PackageReference Include="Microsoft.DotNet.Interactive.Journey" Version="1.0.0-beta.22606.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\Polyglot.Metrics.SysML\Polyglot.Metrics.SysML.csproj" />
   </ItemGroup>
 
 </Project>

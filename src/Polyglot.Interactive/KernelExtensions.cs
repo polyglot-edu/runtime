@@ -1,7 +1,50 @@
-﻿namespace Polyglot.Interactive;
+﻿using Microsoft.DotNet.Interactive;
+using Polyglot.Gamification;
+using System.CommandLine;
+using System.CommandLine.NamingConventionBinder;
+
+namespace Polyglot.Interactive;
 
 public static class KernelExtensions
 {
+    public static void RegisterCommands<T>(this T kernel) where T : Kernel
+    {
+        kernel.AddDirective(SetupGamificationClient());
+
+        Command SetupGamificationClient()
+        {
+            var flowIdOption = new Option<string>(
+                "--flowid",
+                "The flow to id to use.");
+
+            var serverUrlOption = new Option<string>(
+                "--serverurl",
+                "The server url to use.");
+
+            var command = new Command("#!polyglot-setup", "Configures the polyglot for the current notebook.")
+            {
+                Handler = CommandHandler.Create<string, string, KernelInvocationContext>(async (flowId, serverUrl, context) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(serverUrl))
+                    {
+                        GamificationClient.Configure(serverUrl);
+                    }
+                    if (!string.IsNullOrWhiteSpace(flowId))
+                    {
+                        GamificationClient.PolyglotFlowId = flowId;
+                        await KernelExtension.InitializeJourneyAsync(kernel);
+                    }
+
+                    KernelInvocationContextExtensions.Display(context, @"Polyglot configuration is now complete.");
+                })
+
+            };
+            command.AddOption(flowIdOption);
+            command.AddOption(serverUrlOption);
+            return command;
+        }
+    }
+
     //public static T UseGameEngine<T>(this T kernel, Func<HttpClient> clientFactory = null)
     //    where T : Kernel
     //{

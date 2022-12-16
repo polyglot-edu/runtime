@@ -19,6 +19,9 @@ public class SysMLKernel :
 
     public SysMLKernel() : base("sysml")
     {
+        KernelInfo.DisplayName = "SysML";
+        KernelInfo.LanguageName = "SysML";
+        KernelInfo.LanguageVersion = "2.0";
     }
 
     private void SetProcessEventHandlers(Process SysMLProcess)
@@ -39,7 +42,7 @@ public class SysMLKernel :
     {
         EnsureSysMLKernelServerIsRunning();
 
-        var result = await SysMLRpcClient.EvalAsync(command.Code).ConfigureAwait(true);
+        var result = await SysMLRpcClient.EvalAsync(command.Code);
 
         var errors = result.SyntaxErrors.Concat(result.SemanticErrors).ToList();
 
@@ -56,7 +59,7 @@ public class SysMLKernel :
         }
 
         var sumbittedItems = result.Content.Select(c => c.Name);
-        var svgText = await SysMLRpcClient.GetSvgAsync(sumbittedItems).ConfigureAwait(true);
+        var svgText = await SysMLRpcClient.GetSvgAsync(sumbittedItems);
 
         var svg = new SysMLSvg(svgText);
 
@@ -73,7 +76,7 @@ public class SysMLKernel :
             var sysMLJarPath = Environment.GetEnvironmentVariable("SYSML_JAR_PATH");
             if (sysMLJarPath is null)
             {
-                throw new Exception("Environment variable \"SYSML_JAR_PATH\" is not set");
+                throw new RuntimeDependencyMissingException("Environment variable \"SYSML_JAR_PATH\" is not set");
             }
 
             var psi = new ProcessStartInfo
@@ -121,7 +124,7 @@ public class SysMLKernel :
         }
         catch (Exception)
         {
-            throw new Exception("Missing JRE. JRE is required to use the SysML Kernel");
+            throw new RuntimeDependencyMissingException("Missing JRE. JRE is required to use the SysML Kernel");
         }
     }
 }

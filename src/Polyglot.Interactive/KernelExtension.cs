@@ -1,140 +1,115 @@
 ﻿using Microsoft.DotNet.Interactive;
+using Microsoft.DotNet.Interactive.Commands;
+using Microsoft.DotNet.Interactive.CSharp;
 using Microsoft.DotNet.Interactive.Formatting;
 using Polyglot.Gamification;
-using Polyglot.Interactive.SysML;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using static Microsoft.DotNet.Interactive.Formatting.PocketViewTags;
+using Journey = Microsoft.DotNet.Interactive.Journey;
 
 namespace Polyglot.Interactive;
 
 public class KernelExtension : IKernelExtension
 {
-    public Task OnLoadAsync(Kernel kernel)
+    public async Task OnLoadAsync(Kernel kernel)
     {
-        (Kernel.Root as CompositeKernel).UseSysML();
-        return Task.CompletedTask;
-        //return RegisterFormattersAsync();
+        await RegisterFormattersAsync();
+        await InitializePolyglotAsync();
+        //await InitializeJourneyAsync(kernel);
+        kernel.RegisterCommands();
+
+
+        if (KernelInvocationContext.Current is { } current)
+        {
+            current.DisplayAs("Polyglot.Interactive has loaded!", "text/markdown");
+        }
     }
 
-    //private Task RegisterFormattersAsync()
-    //{
-    //    SysMLKernelExtension.RegisterFormatters();
-    //    Formatter.Register<GameStateReport>((report, writer) =>
-    //    {
-    //        var scoreEmoji = (int)report.AssignmentPoints switch
-    //        {
-
-    //            var n when (0 <= n && n <= 10) => "🙂",
-    //            var n when (10 < n && n <= 20) => "😊",
-    //            var n when (20 < n && n <= 30) => "🤗",
-    //            var n when (30 < n && n <= 40) => "😍",
-    //            var n when (40 < n && n <= 50) => "🤩",
-    //            _ => "😑"
-    //        };
-
-    //        var feedbackDisplay = report.Feedbacks.Count() == 0 ? "display:none" : "";
-    //        var feedbacks = report.Feedbacks.Select(f =>
-    //            tr[style: feedbackDisplay](
-    //                // td[style: "width: 50px"]("Feedback"),
-    //                td["colspan='8'"](f)
-    //            )
-    //        );
-
-    //        var divStyle = "font-size: 2em; display: flex; justify-content: center; align-items: center";
-    //        var flames = string.Join("", Enumerable.Range(0, (int)report.AssignmentGoldCoins).Select(_ => "🥇"));
-    //        var html = div[style: "width:800px; border: 1px solid black; padding: 5px"](
-    //            h1[style: "margin-left: 10px"]("Report"),
-    //            table(
-    //                tr(
-    //                    td[style: "width: 50px"]("Level:"), td[style: "width:150px"](div[style: divStyle](report.CurrentLevel)),
-    //                    td[style: "width: 50px"]("Exercise Points:"), td[style: "width:150px"](div[style: divStyle](report.ExercisePoints)),
-    //                    td[style: "width: 50px"]("Assignment Score:"), td[style: "width:150px"](p[style: "font-size:3em"](scoreEmoji)),
-    //                    td[style: "width: 150px"]("Medals:"), td[style: "width:150px"](p[style: "font-size:3em"](flames))
-    //                )
-    //            ),
-    //            h2[style: ("margin-left: 10px;" + feedbackDisplay)]("Feedbacks"),
-    //            table(
-    //                feedbacks
-    //            )
-    //        );
-    //        writer.Write(html);
-    //    }, HtmlFormatter.MimeType);
-
-    //    Formatter.SetPreferredMimeTypeFor(typeof(GameStateReport), HtmlFormatter.MimeType);
-
-    //    return Task.CompletedTask;
-    //}
-
-    public static Task RegisterFormattersCSharpAsync()
+    private static async Task InitializePolyglotAsync()
     {
-        Formatter.Register<GameStatus>((report, writer) =>
-        {
-            var badgesDisplay = report.State.BadgeConcept.Count() == 0 ? "display:none;" : "";
-            var badges = report.State.BadgeConcept.Where(b => b.Name == "C#")
-                                                                    .SelectMany(b => b.BadgeEarned)
-                                                                    .Select(b =>
-                tr[style: badgesDisplay](
-                    td["colspan='8'"](b)
-                )
-            );
-
-            var exerciseScore = report.State.PointConcept.Where(p => p.Name == "assignmentPointsC").FirstOrDefault()?.Score ?? 0;
-            var competencyScore = report.State.PointConcept.Where(p => p.Name == "competencePointsC").FirstOrDefault()?.Score ?? 0;
-
-            var divStyle = "font-size: 2em; display: flex; justify-content: center; align-items: center";
-            var html = div[style: "width:400px; border: 1px solid black; padding: 10px; padding-bottom: 25px"](
-                h1[style: "margin-left: 10px"]("Report"),
-                table(
-                    tr(
-                        td[style: "width: 50px"]("Assignment Points:"), td[style: "width:150px"](div[style: divStyle](exerciseScore)),
-                        td[style: "width: 50px"]("Competency Points:"), td[style: "width:150px"](div[style: divStyle](competencyScore))
-                    )
-                ),
-                h2[style: ("margin-left: 10px; " + badgesDisplay)]("Badges"),
-                table[style: "margin-left: 20px"](
-                    badges
-                )
-            );
-            writer.Write(html);
-        }, HtmlFormatter.MimeType);
-
-        Formatter.SetPreferredMimeTypesFor(typeof(GameStateReport), HtmlFormatter.MimeType);
-
-        return Task.CompletedTask;
+        GamificationClient.Configure("http://localhost");
+        //GamificationClient.PolyglotFlowId = "b2cae670-dffc-4f00-9585-c4b693a0f5d7";
     }
 
-    public static Task RegisterFormattersSysMLAsync()
+    public static async Task InitializeJourneyAsync(Kernel kernel)
     {
-        SysMLKernelExtension.RegisterFormatters();
-        Formatter.Register<GameStatus>((report, writer) =>
+        if (kernel is CompositeKernel compositeKernel)
         {
-            var badgesDisplay = report.State.BadgeConcept.Count() == 0 ? "display:none;" : "";
-            var badges = report.State.BadgeConcept.Where(b => b.Name == "SYSML")
-                                                                    .SelectMany(b => b.BadgeEarned)
-                                                                    .Select(b =>
-                tr[style: badgesDisplay](
-                    td["colspan='8'"](b)
-                )
-            );
+            if (compositeKernel.RootKernel.FindKernelByName("csharp") is CSharpKernel csharpKernel)
+            {
+                csharpKernel.DeferCommand(new SubmitCode($"#r \"{typeof(Journey.Lesson).Assembly.Location}\"", csharpKernel.Name));
+                csharpKernel.DeferCommand(new SubmitCode($"using {typeof(Journey.Lesson).Namespace};", csharpKernel.Name));
+            }
 
-            var exerciseScore = report.State.PointConcept.Where(p => p.Name == "assignmentPointsS").FirstOrDefault()?.Score ?? 0;
-            var competencyScore = report.State.PointConcept.Where(p => p.Name == "competencePointsS").FirstOrDefault()?.Score ?? 0;
+            //Journey.KernelExtensions.UseProgressiveLearningMiddleware(compositeKernel);
+            Journey.Lesson.Clear();
+            Journey.Lesson.Mode = Journey.LessonMode.StudentMode;
 
-            var divStyle = "font-size: 2em; display: flex; justify-content: center; align-items: center";
-            var html = div[style: "width:400px; border: 1px solid black; padding: 10px; padding-bottom: 25px"](
-                h1[style: "margin-left: 10px"]("Report"),
-                table(
-                    tr(
-                        td[style: "width: 50px"]("Assignment Points:"), td[style: "width:150px"](div[style: divStyle](exerciseScore)),
-                        td[style: "width: 50px"]("Competency Points:"), td[style: "width:150px"](div[style: divStyle](competencyScore))
-                    )
-                ),
-                h2[style: ("margin-left: 10px; " + badgesDisplay)]("Badges"),
-                table[style: "margin-left: 20px"](
-                    badges
-                )
-            );
+
+            var firstNode = await GamificationClient.Current.GetInitialExerciseAsync();
+            //var actualFirstNode = firstNode;
+            var actualFirstNode = await JourneyHelper.AutoSkipChallengesThatDontRequireASubmission(compositeKernel, firstNode);
+            var challenge = actualFirstNode.ToJourneyChallenge();
+            await Journey.KernelExtensions.InitializeChallenge(compositeKernel, challenge);
+            await Journey.Lesson.StartChallengeAsync(challenge);
+            //KernelInvocationContext.Current.Display(firstNode);
+            //KernelInvocationContext.Current.Display(actualFirstNode);
+            //KernelInvocationContext.Current.Display(challenge);
+            //KernelInvocationContext.Current.Display(value: "First challenge started");
+        }
+        else
+        {
+            throw new ArgumentException("Not composite kernel");
+        }
+
+        if (KernelInvocationContext.Current is { } current)
+        {
+            current.DisplayAs("Journey has loaded!", "text/markdown");
+        }
+    }
+
+    private static Task RegisterFormattersAsync()
+    {
+        Formatter.Register<GameStateReport>((report, writer) =>
+        {
+            var scoreEmoji = report.AssignmentPoints switch
+            {
+                var n when (0 <= n && n <= 10) => "🙂",
+                var n when (10 < n && n <= 20) => "😊",
+                var n when (20 < n && n <= 30) => "🤗",
+                var n when (30 < n && n <= 40) => "😍",
+                var n when (40 < n && n <= 50) => "🤩",
+                _ => "😑"
+            };
+
+            var html = div(scoreEmoji);
+
+            //var feedbackDisplay = report.Feedbacks.Count() == 0 ? "display:none" : "";
+            //var feedbacks = report.Feedbacks.Select(f =>
+            //    tr[style: feedbackDisplay](
+            //        // td[style: "width: 50px"]("Feedback"),
+            //        td["colspan='8'"](f)
+            //    )
+            //);
+
+            //var divStyle = "font-size: 2em; display: flex; justify-content: center; align-items: center";
+            //var flames = string.Join("", Enumerable.Range(0, (int)report.AssignmentGoldCoins).Select(_ => "🥇"));
+            //var html = div[style: "width:800px; border: 1px solid black; padding: 5px"](
+            //    h1[style: "margin-left: 10px"]("Report"),
+            //    table(
+            //        tr(
+            //            td[style: "width: 50px"]("Level:"), td[style: "width:150px"](div[style: divStyle](report.CurrentLevel)),
+            //            td[style: "width: 50px"]("Exercise Points:"), td[style: "width:150px"](div[style: divStyle](report.ExercisePoints)),
+            //            td[style: "width: 50px"]("Assignment Score:"), td[style: "width:150px"](p[style: "font-size:3em"](scoreEmoji)),
+            //            td[style: "width: 150px"]("Medals:"), td[style: "width:150px"](p[style: "font-size:3em"](flames))
+            //        )
+            //    ),
+            //    h2[style: ("margin-left: 10px;" + feedbackDisplay)]("Feedbacks"),
+            //    table(
+            //        feedbacks
+            //    )
+            //);
             writer.Write(html);
         }, HtmlFormatter.MimeType);
 
