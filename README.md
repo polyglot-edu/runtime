@@ -41,7 +41,15 @@ During the installation process make sure to add GraphViz to PATH (at least for 
 Install the JRE (Java Runtime Environment) for your machine (Java 17 or above). Make sure to add the JRE to PATH (at least for the current user) so that you can run "java --version" from the command line.
 
 ### Step 3 - Use Polyglot
-Open the notebook on VSCode and run the two cells at the top of the notebook.
+Open the notebook on VSCode and run:
+first cell:
+```
+#r "nuget: Polyglot.Interactive, 0.0.2-*"
+```
+second cell:
+```
+#!polyglot-setup --flowid PUT_HERE_THE_FLOW_ID_YOU_WANT_TO_RUN --serverurl https://api.polyglot-edu.com/
+```
 
 ## Contributors
 
