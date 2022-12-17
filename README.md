@@ -2,7 +2,7 @@
 
 A Gamified .NET Interactive Framework for Teaching and Learning Multi-Language Programming for High School and Undergraduate Students
 
-Currently, Polyglot only works with C# but we're working on the support for the other .NET Interactive languages (F#, Javascript, ...) and [SysML V2](https://www.omgsysml.org/SysML-2.htm)
+Polyglot works well with C# and [SysML V2](https://www.omgsysml.org/SysML-2.htm), but we're extending the support for the other .NET Interactive languages (F#, Javascript, ...)
 
 See it in action in the videos below!
 
@@ -23,28 +23,25 @@ https://user-images.githubusercontent.com/41111850/139651436-ab99f0cc-312d-4cdd-
 You can clone the repo and open the solution with Visual Studio.  
 The solution is composed of three projects (plus the test project):
 
-- **Polyglot.Core**: defines the language engine structure and the metrics interface. Handles the communication with Polyglot backend
-- **Polyglot.Interactive**: lets you install language engines and provides some common metrics
-- **Polyglot.CSharp**: has language specific metrics and language engine
+- **Polyglot.Gamification**: Handles the communication with Polyglot backend and the integration with Journey
+- **Polyglot.Interactive**: handles the integration with VSCode notebooks
+- **Polyglot.Interactive.SysML**: Provides the SysML kernel abstraction for .NET Interactive
+- **Polyglot.Metrics.CSharp**: has language specific metrics
+- **Polyglot.Metrics.SysML**: has language specific metrics
 
-## How to test
+## Requirements installation guide
+### Step 1 - Install VSCode and .NET 7
+Go to [https://dotnet.microsoft.com/en-us/download/dotnet/7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), download and install the latest .NET 7 version available for your machine.  
+Go to [https://code.visualstudio.com/download](https://code.visualstudio.com/download), download and install the latest VSCode version available for your machine.  
+Open VSCode, go to the extensions marketplace and install the "Polyglot Notebooks" extension, version 1.0.3611020 (you can also find it at the following link [https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-interactive-vscode](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-interactive-vscode))
 
-To test what we have done, you'll need the latest version of Visual Studio Code.
-You can create your new notebook or use the ones in ```/notebooks``` as a template.  
+### Step 2 - Install additional requirements for SysML
+Go to [https://graphviz.org/download/](https://graphviz.org/download/), download and install GraphViz 7.* for your machine.  
+During the installation process make sure to add GraphViz to PATH (at least for the current user)
+Install the JRE (Java Runtime Environment) for your machine (Java 17 or above). Make sure to add the JRE to PATH (at least for the current user) so that you can run "java --version" from the command line.
 
-You can build Polyglot solution, pack it into a NuGet package and import it from a local folder as shown [in this notebook](https://github.com/antbucc/POLYGLOT/blob/main/notebooks/Sample1.ipynb).  
-Alternatively you can skip the NuGet package part and directly use the .dll created by the build.
-By doing that you'll need to manually configure Polyglot using this code in your first cell.
-
-``` csharp
-#r "path_to_your_polyglot_folder\src\Polyglot.Interactive\bin\Debug\net5.0\Polyglot.Interactive.dll"
-using Polyglot.Interactive;
-using Polyglot.Core;
-using Microsoft.DotNet.Interactive;
-var kernelExtension = new KernelExtension();
-var root = Kernel.Current.ParentKernel;
-await kernelExtension.OnLoadAsync(root);
-```
+### Step 3 - Use Polyglot
+Open the notebook on VSCode and run the two cells at the top of the notebook.
 
 ## Contributors
 
@@ -52,7 +49,7 @@ await kernelExtension.OnLoadAsync(root);
 
 - **Diego Colombo** - Microsoft Research, Cambridge, United Kingdom
 
-- **Tommaso Martorella** - Microsoft Learn Student Ambassador
+- **Tommaso Martorella** - Master's student at École Polytechnique Fédérale de Lausanne (EPFL), Switzerland - Microsoft Learn Student Ambassador
 
 For any information, you can contact us by writing an email to bucchiarone@fbk.eu
 
