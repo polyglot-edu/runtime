@@ -53,11 +53,13 @@ second cell:
 
 ## Contributors
 
-- **Antonio Bucchiarone** - Fondazione Bruno Kessler (FBK), Trento - Italy
+- **Antonio Bucchiarone** - Fondazione Bruno Kessler (FBK), Trento, Italy
 
 - **Diego Colombo** - Microsoft Research, Cambridge, United Kingdom
 
-- **Tommaso Martorella** - Master's student at École Polytechnique Fédérale de Lausanne (EPFL), Switzerland - Microsoft Learn Student Ambassador
+- **Tommaso Martorella** - École Polytechnique Fédérale de Lausanne (EPFL), Lausanne, Switzerland - Microsoft Learn Student Ambassador
+
+- **Davide Frageri** - Università di Trento, Trento, Italy
 
 For any information, you can contact us by writing an email to bucchiarone@fbk.eu
 
