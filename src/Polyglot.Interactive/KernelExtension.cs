@@ -14,6 +14,18 @@ public class KernelExtension : IKernelExtension
 {
     public async Task OnLoadAsync(Kernel kernel)
     {
+        if (kernel is CompositeKernel compositeKernel)
+        {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            // kernel will be disposed by .NET Interactive when it is unloaded
+            compositeKernel.Add(new MultipleChoiceKernel());
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        }
+        else
+        {
+            throw new ArgumentException("Not composite kernel");
+        }
+
         await RegisterFormattersAsync();
         await InitializePolyglotAsync();
         //await InitializeJourneyAsync(kernel);
@@ -51,8 +63,8 @@ public class KernelExtension : IKernelExtension
             //var actualFirstNode = firstNode;
             var actualFirstNode = await JourneyHelper.AutoSkipChallengesThatDontRequireASubmission(compositeKernel, firstNode);
             var challenge = actualFirstNode.ToJourneyChallenge();
-            await Journey.KernelExtensions.InitializeChallenge(compositeKernel, challenge);
             await Journey.Lesson.StartChallengeAsync(challenge);
+            await Journey.KernelExtensions.InitializeChallenge(compositeKernel, challenge);
             //KernelInvocationContext.Current.Display(firstNode);
             //KernelInvocationContext.Current.Display(actualFirstNode);
             //KernelInvocationContext.Current.Display(challenge);

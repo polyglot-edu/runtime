@@ -158,8 +158,8 @@ public static class JourneyHelper
         {
             // send challenge to journey so it displays
             var currentChallenge = currentNode.ToJourneyChallenge();
-            await compositeKernel.InitializeChallenge(currentChallenge);
             await Lesson.StartChallengeAsync(currentChallenge);
+            await compositeKernel.InitializeChallenge(currentChallenge);
 
             Thread.Sleep(1000); // TODO: find a better way to wait for the challenge to be displayed
 
