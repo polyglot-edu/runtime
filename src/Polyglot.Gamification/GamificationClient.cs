@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Polyglot.Gamification;
 
+public record NextExerciseResponse(
+    string ctx,
+    PolyglotNode firstNode
+);
+
 public class GamificationClient
 {
     public const string DefaultServerUri = "http://localhost/";
@@ -15,6 +20,7 @@ public class GamificationClient
 
     private readonly HttpClient _client;
     public Uri ServerUri { get; init; }
+    public string CtxId { get; set; }
 
     private GamificationClient(Uri serverUrl, HttpClient httpClient)
     {
@@ -43,6 +49,27 @@ public class GamificationClient
         Current = new GamificationClient(serverUri, clientFactory?.Invoke() ?? new HttpClient());
     }
 
+    public async Task<bool> SendCommand(string cmd) => await SendCommand(cmd, CtxId, CancellationToken.None);
+    public async Task<bool> SendCommand(string cmd, CancellationToken cancellationToken) => await SendCommand(cmd, CtxId, cancellationToken);
+    public async Task<bool> SendCommand(string cmd, string contextId, CancellationToken cancellationToken)
+    {
+        const string requestUri = "/api/execution/cmd";
+        var requestBody = new
+        {
+            ctxId = contextId,
+            cmd = cmd
+        };
+
+        using var actualRequestBody = requestBody.ToBody();
+        var response = await _client.PostAsync(new Uri(ServerUri, requestUri), actualRequestBody, cancellationToken);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public async Task<PolyglotNode> GetInitialExerciseAsync() => await GetInitialExerciseAsync(PolyglotFlowId, CancellationToken.None);
     public async Task<PolyglotNode> GetInitialExerciseAsync(string polyglotFlowId) => await GetInitialExerciseAsync(polyglotFlowId, CancellationToken.None);
     public async Task<PolyglotNode> GetInitialExerciseAsync(string polyglotFlowId, CancellationToken cancellationToken)
@@ -61,7 +88,11 @@ public class GamificationClient
         }
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return content.ToObject<PolyglotNode>();
+        var output = content.ToObject<NextExerciseResponse>();
+
+        CtxId = output.ctx;
+
+        return output.firstNode;
     }
 
     public async Task<PolyglotNode> GetNextExerciseAsync(IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(PolyglotFlowId, satisfiedConditions, CancellationToken.None);
@@ -71,7 +102,7 @@ public class GamificationClient
         const string requestUri = "/api/execution/next";
         var requestBody = new
         {
-            flowId = polyglotFlowId,
+            ctxId = CtxId,
             satisfiedConditions
         };
 
