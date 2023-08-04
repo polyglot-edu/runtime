@@ -64,7 +64,7 @@ public class SysMLKernel :
         var svg = new SysMLSvg(svgText);
 
         context.Display(svg, HtmlFormatter.MimeType);
-        context.Publish(new ReturnValueProduced(result, command, FormattedValue.FromObject(result)));
+        context.Publish(new ReturnValueProduced(result, command, FormattedValue.CreateManyFromObject(result)));
     }
 
     private void EnsureSysMLKernelServerIsRunning()

@@ -39,7 +39,7 @@ Valid options are: {Options.ToChoiceString()}
             }
             else
             {
-                context.Publish(new ReturnValueProduced(choices, command, FormattedValue.FromObject(choices)));
+                context.Publish(new ReturnValueProduced(choices, command, FormattedValue.CreateManyFromObject(choices)));
             }
 
             return Task.CompletedTask;
