@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RepositoryUrl>https://github.com/polyglot-edu/runtime</RepositoryUrl>
     <PackageProjectUrl>https://github.com/polyglot-edu/runtime</PackageProjectUrl>
@@ -17,8 +17,8 @@
 	
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.23313.2" />
-    <PackageReference Include="Microsoft.DotNet.Interactive.Journey" Version="1.0.0-beta.23313.2" />
+    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.24101.2" />
+    <PackageReference Include="Microsoft.DotNet.Interactive.Journey" Version="1.0.0-beta.24101.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 	

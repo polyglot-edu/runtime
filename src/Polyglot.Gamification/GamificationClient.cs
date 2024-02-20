@@ -9,7 +9,7 @@ namespace Polyglot.Gamification;
 
 public record NextExerciseResponse(
     string ctx,
-    PolyglotNode firstNode
+    string platform
 );
 
 public class GamificationClient
@@ -92,7 +92,26 @@ public class GamificationClient
 
         CtxId = output.ctx;
 
-        return output.firstNode;
+        return await GetActualNode(cancellationToken);
+    }
+
+    public async Task<PolyglotNode> GetActualNode(CancellationToken cancellationToken)
+    {
+        const string requestUri = "/api/execution/actual";
+        var requestBody = new
+        {
+            ctxId = CtxId
+        };
+
+        using var actualRequestBody = requestBody.ToBody();
+        var response = await _client.PostAsync(new Uri(ServerUri, requestUri), actualRequestBody, cancellationToken);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new HttpRequestException($"Failed to get actual node. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        return content.ToObject<PolyglotNode>();
     }
 
     public async Task<PolyglotNode> GetNextExerciseAsync(IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(PolyglotFlowId, satisfiedConditions, CancellationToken.None);
@@ -103,7 +122,8 @@ public class GamificationClient
         var requestBody = new
         {
             ctxId = CtxId,
-            satisfiedConditions
+            satisfiedConditions,
+            flowId = polyglotFlowId
         };
 
         using var actualRequestBody = requestBody.ToBody();
