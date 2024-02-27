@@ -70,9 +70,9 @@ public class GamificationClient
         return true;
     }
 
-    public async Task<PolyglotNode> GetInitialExerciseAsync() => await GetInitialExerciseAsync(PolyglotFlowId, CancellationToken.None);
-    public async Task<PolyglotNode> GetInitialExerciseAsync(string polyglotFlowId) => await GetInitialExerciseAsync(polyglotFlowId, CancellationToken.None);
-    public async Task<PolyglotNode> GetInitialExerciseAsync(string polyglotFlowId, CancellationToken cancellationToken)
+    public async Task RequestNewContextAsync() => await RequestNewContextAsync(PolyglotFlowId, CancellationToken.None);
+    public async Task RequestNewContextAsync(string polyglotFlowId) => await RequestNewContextAsync(polyglotFlowId, CancellationToken.None);
+    public async Task RequestNewContextAsync(string polyglotFlowId, CancellationToken cancellationToken)
     {
         const string requestUri = "/api/execution/first";
         var requestBody = new
@@ -84,18 +84,17 @@ public class GamificationClient
         var response = await _client.PostAsync(new Uri(ServerUri, requestUri), actualRequestBody, cancellationToken);
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            throw new HttpRequestException($"Failed to get initial exercise. Status code: {response.StatusCode}");
+            throw new HttpRequestException($"Failed to get context id. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var output = content.ToObject<NextExerciseResponse>();
 
         CtxId = output.ctx;
-
-        return await GetActualNode(cancellationToken);
     }
 
-    public async Task<PolyglotNode> GetActualNode(CancellationToken cancellationToken)
+    public async Task<PolyglotNode> GetActualNodeAsync() => await GetActualNodeAsync(CancellationToken.None);
+    public async Task<PolyglotNode> GetActualNodeAsync(CancellationToken cancellationToken)
     {
         const string requestUri = "/api/execution/actual";
         var requestBody = new

@@ -58,8 +58,12 @@ public class KernelExtension : IKernelExtension
             Journey.Lesson.Clear();
             Journey.Lesson.Mode = Journey.LessonMode.StudentMode;
 
+            if (string.IsNullOrEmpty(GamificationClient.Current.CtxId))
+            {
+                await GamificationClient.Current.RequestNewContextAsync();
+            }
 
-            var firstNode = await GamificationClient.Current.GetInitialExerciseAsync();
+            var firstNode = await GamificationClient.Current.GetActualNodeAsync();
             //var actualFirstNode = firstNode;
             var actualFirstNode = await JourneyHelper.AutoSkipChallengesThatDontRequireASubmission(compositeKernel, firstNode);
             var challenge = actualFirstNode.ToJourneyChallenge();
