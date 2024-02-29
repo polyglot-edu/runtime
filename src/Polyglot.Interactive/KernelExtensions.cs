@@ -36,10 +36,14 @@ public static class KernelExtensions
                     if (!string.IsNullOrWhiteSpace(flowId))
                     {
                         GamificationClient.PolyglotFlowId = flowId;
-                        if (!string.IsNullOrWhiteSpace(contextId))
-                        {
-                            GamificationClient.Current.CtxId = contextId;
-                        }
+                    }
+                    if (!string.IsNullOrWhiteSpace(contextId))
+                    {
+                        GamificationClient.Current.CtxId = contextId;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(flowId) || !string.IsNullOrWhiteSpace(contextId))
+                    {
                         await KernelExtension.InitializeJourneyAsync(kernel);
                     }
 

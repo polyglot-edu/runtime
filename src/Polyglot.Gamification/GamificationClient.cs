@@ -113,16 +113,15 @@ public class GamificationClient
         return content.ToObject<PolyglotNode>();
     }
 
-    public async Task<PolyglotNode> GetNextExerciseAsync(IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(PolyglotFlowId, satisfiedConditions, CancellationToken.None);
-    public async Task<PolyglotNode> GetNextExerciseAsync(string polyglotFlowId, IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(polyglotFlowId, satisfiedConditions, CancellationToken.None);
-    public async Task<PolyglotNode> GetNextExerciseAsync(string polyglotFlowId, IEnumerable<string> satisfiedConditions, CancellationToken cancellationToken)
+    public async Task<PolyglotNode> GetNextExerciseAsync(IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(CtxId, satisfiedConditions, CancellationToken.None);
+    public async Task<PolyglotNode> GetNextExerciseAsync(string contextId, IEnumerable<string> satisfiedConditions) => await GetNextExerciseAsync(contextId, satisfiedConditions, CancellationToken.None);
+    public async Task<PolyglotNode> GetNextExerciseAsync(string contextId, IEnumerable<string> satisfiedConditions, CancellationToken cancellationToken)
     {
         const string requestUri = "/api/execution/next";
         var requestBody = new
         {
-            ctxId = CtxId,
-            satisfiedConditions,
-            flowId = polyglotFlowId
+            ctxId = contextId,
+            satisfiedConditions
         };
 
         using var actualRequestBody = requestBody.ToBody();
