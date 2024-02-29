@@ -41,6 +41,8 @@ public record PolyglotNode(
     [JsonProperty("type")]
     string NodeType,
 
+    string Platform,
+
     [JsonConverter(typeof(ExpandoObjectConverter))]
     dynamic Data
 );

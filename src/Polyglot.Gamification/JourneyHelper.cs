@@ -156,6 +156,13 @@ public static class JourneyHelper
         var challengeDoesntRequireSubmission = currentNode.Validation.All(e => e.EdgeType == "unconditionalEdge") && currentNode.Validation.Any();
         while (challengeDoesntRequireSubmission)
         {
+
+            // need to change this ASAP. This is a hacky fix to an architectural problem
+            if (!currentNode.Platform.Equals("VSCode", StringComparison.Ordinal))
+            {
+                return currentNode;
+            }
+
             // send challenge to journey so it displays
             var currentChallenge = currentNode.ToJourneyChallenge();
             await Lesson.StartChallengeAsync(currentChallenge);
